@@ -13,6 +13,7 @@ using DotNetNuke.Web.Mvc.Framework.Controllers;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using DotNetNuke.Entities.Modules;
+using AnimalView.Dnn.AnimalView_Modul.Services;
 
 
 namespace AnimalView.Dnn.AnimalView_Modul.Controllers
@@ -20,13 +21,31 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
     [DnnHandleError]
     public class AnimalController : DnnController
     {
+        private readonly AnimalService _animalService;
         private List<Models.Animal> Animals { get; set; }
-        
+
         // GET: Animal
+        [ModuleAction]
         public ActionResult Index()
         {
-            
+            Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin()); //Setting! majd
             return View(Animals);
+        }
+
+        // POST: Animal/Create
+        [HttpPost]
+        public ActionResult Create(string collection)
+        {
+            try
+            {
+                // TODO: Add insert logic here
+                _animalService.AddOrder();
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
         }
 
         // GET: Animal/Details/5
@@ -41,21 +60,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
             return View();
         }
 
-        // POST: Animal/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        
 
         // GET: Animal/Edit/5
         public ActionResult Edit(int id)

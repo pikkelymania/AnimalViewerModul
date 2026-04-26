@@ -60,6 +60,7 @@
                     <helpUrl />
                     <viewOrder>0</viewOrder>
                   </moduleControl>
+                  
                   <moduleControl>
                     <controlKey>Edit</controlKey>
                     <controlSrc>AnimalView.Dnn.AnimalView_Modul.Controllers/Item/Edit.mvc</controlSrc>
@@ -86,6 +87,26 @@
             </moduleDefinitions>
           </desktopModule>
         </component>
+		  <!-- 3. A fájlok (View-k, CSS, stb.) -->
+		  <component type="File">
+			  <files>
+				  <basePath>DesktopModules\MVC\AnimalView_Modul</basePath>
+				  <sourceFiles>
+					  <sourceFile>
+						  <name>Views\Animal\Index.cshtml</name>
+					  </sourceFile>
+					  <!--sourceFile>
+						  <name>Views\Event\Details.cshtml</name>
+					  </sourceFile>
+					  <sourceFile>
+						  <name>Views\Event\Edit.cshtml</name>
+					  </sourceFile>
+					  <sourceFile>
+						  <name>Views\Event\Delete.cshtml</name>
+					  </sourceFile-->
+				  </sourceFiles>
+			  </files>
+		  </component>
         <component type="Assembly">
           <assemblies>
             <assembly>

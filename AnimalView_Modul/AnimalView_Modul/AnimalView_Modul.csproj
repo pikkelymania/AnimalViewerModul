@@ -71,7 +71,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Hotcakes.Commerce.Dnn, Version=3.9.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\bin\Hotcakes.Commerce.Dnn.dll</HintPath>
+      <HintPath>..\..\..\bin\Hotcakes.Commerce.Dnn.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Hotcakes.Commerce, Version=3.9.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -165,8 +165,6 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\Item\Index.cshtml" />
-    <Content Include="Views\Item\Edit.cshtml" />
     <Content Include="Views\Settings\Settings.cshtml" />
     <Content Include="Views\Animal\Index.cshtml" />
     <Content Include="Views\Animal\Edit.cshtml" />
