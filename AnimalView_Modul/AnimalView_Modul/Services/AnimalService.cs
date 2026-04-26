@@ -11,14 +11,14 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
     public class AnimalService
     {
-        private List<Models.Animal> _Animals;
+        private IEnumerable<Models.Animal> _Animals;
         private List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals;
 
         private Hotcakes.CommerceDTO.v1.Client.Api _api;
         private string StoreUrl = "http://www.pikkelymania.hu/";
         private string ApiKey = "1-45782d8b-85b9-4924-aafe-ea09050cbc9e";
         
-        public List<Models.Animal> GetAnimals(string CatId)
+        public IEnumerable<Models.Animal> GetAnimals(string CatId)
         {
             _api = new Api(StoreUrl, ApiKey);
             var catResponse = _api.ProductsFindForCategory(CatId, 1, 100);
@@ -27,8 +27,23 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 _RawAnimals = catResponse.Content.Products;
                 foreach (var i in _RawAnimals)
                 {
-                    _Animals.Add(GetAnimalData(i));
+                    _Animals.Append(GetAnimalData(i));
                 }
+            }
+            if(_Animals.Count() == 0)
+            {
+                Models.Animal a = new Models.Animal()
+                {
+                    AnimalId = "id",
+                    BirthDate = DateTime.Now,
+                    Gender = "nem",
+                    Genetics = "genetika",
+                    Image = "kép",
+                    Name = "név",
+                    Personality = "szem.",
+                    Price = 0
+                };
+                _Animals.Append(a);
             }
             return _Animals;
         }

@@ -1,9 +1,8 @@
-﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<List<AnimalView.Dnn.AnimalView_Modul.Models.Animal>>
+﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<IEnumerable<AnimalView.Dnn.AnimalView_Modul.Models.Animal>>
 
-@{
+@*@{
     Layout = null;
-}
-
+}*@
 @foreach(var animal in Model)
 {
     @animal.Name;

@@ -60,8 +60,8 @@
                     <helpUrl />
                     <viewOrder>0</viewOrder>
                   </moduleControl>
-                  
-                  <moduleControl>
+
+					<moduleControl>
                     <controlKey>Edit</controlKey>
                     <controlSrc>AnimalView.Dnn.AnimalView_Modul.Controllers/Item/Edit.mvc</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
@@ -95,10 +95,10 @@
 					  <sourceFile>
 						  <name>Views\Animal\Index.cshtml</name>
 					  </sourceFile>
-					  <!--sourceFile>
-						  <name>Views\Event\Details.cshtml</name>
-					  </sourceFile>
 					  <sourceFile>
+						  <name>Views\Animal\Edit.cshtml</name>
+					  </sourceFile>
+					  <!--sourceFile>
 						  <name>Views\Event\Edit.cshtml</name>
 					  </sourceFile>
 					  <sourceFile>

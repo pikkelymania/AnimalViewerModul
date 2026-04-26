@@ -22,13 +22,13 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
     public class AnimalController : DnnController
     {
         private readonly AnimalService _animalService;
-        private List<Models.Animal> Animals { get; set; }
+        //private List<Models.Animal> Animals { get; set; }
 
         // GET: Animal
         [ModuleAction]
         public ActionResult Index()
         {
-            Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin()); //Setting! majd
+            var Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin()); //Setting! majd
             return View(Animals);
         }
 
@@ -48,62 +48,5 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
             }
         }
 
-        // GET: Animal/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Animal/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        
-
-        // GET: Animal/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Animal/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Animal/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Animal/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
