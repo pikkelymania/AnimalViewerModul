@@ -30,8 +30,9 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         public ActionResult Settings()
         {
             var settings = new Models.Settings();
-            settings.Setting1 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", false);
+            settings.Setting1 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "valami");
             settings.Setting2 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting2", System.DateTime.Now);
+            //settings.ModuleCategory = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimelView_Mudul_ModuleCategory", false);
 
             return View(settings);
         }
@@ -48,6 +49,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         {
             ModuleContext.Configuration.ModuleSettings["AnimalView_Modul_Setting1"] = settings.Setting1.ToString();
             ModuleContext.Configuration.ModuleSettings["AnimalView_Modul_Setting2"] = settings.Setting2.ToUniversalTime().ToString("u");
+            //ModuleContext.Configuration.ModuleSettings["AnimalView_Modul_ModuleCategory"] = settings.ModuleCategory.ToString();
 
             return RedirectToDefaultRoute();
         }

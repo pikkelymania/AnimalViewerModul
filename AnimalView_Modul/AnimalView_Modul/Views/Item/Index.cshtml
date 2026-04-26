@@ -3,7 +3,7 @@
 @using System.Text.RegularExpressions
 @using DotNetNuke.Web.Mvc.Helpers
 
-
+<div id="id"></div>
 <div id="Items-@Dnn.ModuleContext.ModuleId">
     @if (Model.Count() == 0)
     {
@@ -31,3 +31,18 @@
         </ul>
     }
 </div>
+
+<script>
+    var a;
+    fetch('DesktopModules/Hotcakes/API/rest/v1/categories?key=1-373c536b-c1e0-4039-9019-5f18d6a4babe', {
+        method: 'GET',
+        headers: {
+            //'X-Hotcakes-API-Key': '1-8e648e33-7258-4ea0-81a9-20e5bc14c86d'
+            //'Access- Control - Allow - Origin' : 'Allow'
+        }
+    })
+        .then(res => res.json())
+        .then(adat => { console.log(adat); a = adat })
+        .catch(err => console.error('Hiba:', err));
+    document.getElementById(`id`).innerHTML = a
+</script>

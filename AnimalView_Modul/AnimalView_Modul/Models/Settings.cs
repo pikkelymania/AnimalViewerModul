@@ -18,7 +18,8 @@ namespace AnimalView.Dnn.AnimalView_Modul.Models
 {
     public class Settings
     {
-        public bool Setting1 { get; set; }
+        public bool ModuleCategory { get; set; }
+        public string Setting1 { get; set; }
         public DateTime Setting2 { get; set; }
     }
 }
