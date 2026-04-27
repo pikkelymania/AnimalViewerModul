@@ -4,6 +4,7 @@ using Hotcakes.CommerceDTO.v1.Client;
 using Hotcakes.CommerceDTO.v1.Orders;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -12,7 +13,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
     public class AnimalService
     {
         private List<Models.Animal> _Animals = new List<Models.Animal>();
-        private List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals = new List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO>();
+        //private List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals = new List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO>();
 
         private Hotcakes.CommerceDTO.v1.Client.Api _api;
         private string StoreUrl = "http://www.pikkelymania.hu/";
@@ -24,12 +25,12 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             var catResponse = _api.ProductsFindForCategory(CatId, 1, 100);
             if (catResponse.Content != null || catResponse.Errors.Count == 0)
             {
-                _RawAnimals = catResponse.Content.Products;
+                List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals = catResponse.Content.Products;
                 if(_RawAnimals.Count > 0)
                 {
                     foreach (var i in _RawAnimals)
                     {
-                        _Animals.Append(GetAnimalData(i));
+                        _Animals.Add(GetAnimalData(i));
                     }
                 }
                 

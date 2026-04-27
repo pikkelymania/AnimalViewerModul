@@ -28,7 +28,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         [ModuleAction]
         public ActionResult Index()
         {
-            var Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin()); //Setting! majd
+            List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin()); //Setting! majd
             return View(Animals);
         }
 
