@@ -8,15 +8,26 @@
 {
     <p>Nincsenek állatok</p>
 }
-@foreach (var animal in Model)
+else
 {
-    <div>@animal.Name;</div>
-    <div>@animal.Gender;</div>
-    <div>@animal.BirthDate;</div>
-    <div>@animal.Genetics;</div>
-    <div>@animal.Personality;</div>
-    <div>@animal.Price</div>
+    <section class="slider">
+        @foreach (var animal in Model)
+        {
+            <div>
+                <img alt=@animal.Image ; />
+                <table>
+                    <tr><td>@animal.Name;</td></tr>
+                    <tr><td>@animal.Gender;</td></tr>
+                    <tr><td>@animal.BirthDate;</td></tr>
+                    <tr><td>@animal.Genetics;</td></tr>
+                    <tr><td>@animal.Personality;</td></tr>
+                    <tr><td>@animal.Price;</td></tr>
+                </table>
+            </div>
+        }
+    </section>
 }
+
 <script>
     var a = @Model.Count
     console.log(a)
