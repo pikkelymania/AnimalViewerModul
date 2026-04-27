@@ -21,7 +21,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
     [DnnHandleError]
     public class AnimalController : DnnController
     {
-        private readonly AnimalService _animalService;
+        private readonly AnimalService _animalService = new AnimalService();
         //private List<Models.Animal> Animals { get; set; }
 
         // GET: Animal

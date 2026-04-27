@@ -11,24 +11,28 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
     public class AnimalService
     {
-        private IEnumerable<Models.Animal> _Animals;
-        private List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals;
+        private List<Models.Animal> _Animals = new List<Models.Animal>();
+        private List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals = new List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO>();
 
         private Hotcakes.CommerceDTO.v1.Client.Api _api;
         private string StoreUrl = "http://www.pikkelymania.hu/";
         private string ApiKey = "1-45782d8b-85b9-4924-aafe-ea09050cbc9e";
         
-        public IEnumerable<Models.Animal> GetAnimals(string CatId)
+        public List<Models.Animal> GetAnimals(string CatId)
         {
-            _api = new Api(StoreUrl, ApiKey);
+            _api = new Hotcakes.CommerceDTO.v1.Client.Api(StoreUrl, ApiKey);
             var catResponse = _api.ProductsFindForCategory(CatId, 1, 100);
-            if (catResponse.Errors != null || catResponse.Errors.Count == 0)
+            if (catResponse.Content != null || catResponse.Errors.Count == 0)
             {
                 _RawAnimals = catResponse.Content.Products;
-                foreach (var i in _RawAnimals)
+                if(_RawAnimals.Count > 0)
                 {
-                    _Animals.Append(GetAnimalData(i));
+                    foreach (var i in _RawAnimals)
+                    {
+                        _Animals.Append(GetAnimalData(i));
+                    }
                 }
+                
             }
             if(_Animals.Count() == 0)
             {
