@@ -94,8 +94,8 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             }
 
             Models.Animal CurrentAnimal = new Models.Animal() { 
-                AnimalId = AName,
-                Name = RawAnimal.ProductName,
+                AnimalId = RawAnimal.Bvin,
+                Name = AName,
                 Image = RawAnimal.ImageFileMedium,
                 Price = RawAnimal.SitePrice,
                 BirthDate = ABirthDate,
