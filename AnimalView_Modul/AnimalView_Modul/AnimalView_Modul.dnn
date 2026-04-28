@@ -1,6 +1,6 @@
 <dotnetnuke type="Package" version="5.0">
   <packages>
-    <package name="AnimalView_Modul" type="Module" version="00.00.03">
+    <package name="AnimalView_Modul" type="Module" version="00.00.04">
       <friendlyName>AnimalView_Modul</friendlyName>
       <description>AnimalView_Modul</description>
       <iconFile>~/Icons/Sigma/Software_32X32_Standard.png</iconFile>
