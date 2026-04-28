@@ -3,7 +3,6 @@
 @*@{
         Layout = null;
     }*@
-<h1>Szakállas agámák</h1>
 @if (Model.Count == 0)
 {
     <p>Nincsenek állatok</p>
@@ -15,20 +14,34 @@ else
         {
             <div>
                 <img alt=@animal.Image ; />
-                <table>
-                    <tr><td>@animal.Name;</td></tr>
-                    <tr><td>@animal.Gender;</td></tr>
-                    <tr><td>@animal.BirthDate;</td></tr>
-                    <tr><td>@animal.Genetics;</td></tr>
-                    <tr><td>@animal.Personality;</td></tr>
-                    <tr><td>@animal.Price;</td></tr>
+                <table class="aVTable">
+                    <tr>
+                        <td class="aVAttrubuteName">Név: </td>
+                        <td class="aVAttrubuteValue">@animal.Name;</td>
+                    </tr>
+                    <tr>
+                        <td class="aVAttrubuteName">Nem: </td>  
+                        <td class="aVAttrubuteValue">@animal.Gender;</td>
+                    </tr>
+                    <tr>
+                        <td class="aVAttrubuteName">Születési idő:</td>
+                        <td class="aVAttrubuteValue">@animal.BirthDate;</td>
+                    </tr>
+                    <tr>
+                        <td class="aVAttrubuteName">Genetika: </td>
+                        <td class="aVAttrubuteValue">@animal.Genetics;</td>
+                    </tr>
+                    <tr>
+                        <td class="aVAttrubuteName">Személyiség: </td>
+                        <td class="aVAttrubuteValue">@animal.Personality;</td>
+                    </tr>
+                    <tr class="aVPrice">
+                        <td class="aVAttrubuteName">Ár:</td>
+                        <td class="aVAttrubuteValue">@animal.Price;</td>
+                    </tr>
                 </table>
+                <button>Lefoglalom</button>
             </div>
         }
     </section>
 }
-
-<script>
-    var a = @Model.Count
-    console.log(a)
-</script>
