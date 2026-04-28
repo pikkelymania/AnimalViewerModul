@@ -13,31 +13,31 @@ else
         @foreach (var animal in Model)
         {
             <div>
-                <img alt=@animal.Image ; />
-                <table class="aVTable">
+                <img class="avImage" src="http://98.71.34.143:80/Portals/0/Hotcakes/Data/products/@animal.AnimalId/medium/@animal.Image" alt=@animal.Image ; />
+                <table class="avTable">
                     <tr>
-                        <td class="aVAttrubuteName">Név: </td>
-                        <td class="aVAttrubuteValue">@animal.Name;</td>
+                        <td class="avAttrubuteName">Név: </td>
+                        <td class="avAttrubuteValue">@animal.Name;</td>
                     </tr>
                     <tr>
-                        <td class="aVAttrubuteName">Nem: </td>  
-                        <td class="aVAttrubuteValue">@animal.Gender;</td>
+                        <td class="avAttrubuteName">Nem: </td>  
+                        <td class="avAttrubuteValue">@animal.Gender;</td>
                     </tr>
                     <tr>
-                        <td class="aVAttrubuteName">Születési idő:</td>
-                        <td class="aVAttrubuteValue">@animal.BirthDate;</td>
+                        <td class="avAttrubuteName">Születési idő:</td>
+                        <td class="avAttrubuteValue">@animal.BirthDate;</td>
                     </tr>
                     <tr>
-                        <td class="aVAttrubuteName">Genetika: </td>
-                        <td class="aVAttrubuteValue">@animal.Genetics;</td>
+                        <td class="avAttrubuteName">Genetika: </td>
+                        <td class="avAttrubuteValue">@animal.Genetics;</td>
                     </tr>
                     <tr>
-                        <td class="aVAttrubuteName">Személyiség: </td>
-                        <td class="aVAttrubuteValue">@animal.Personality;</td>
+                        <td class="avAttrubuteName">Személyiség: </td>
+                        <td class="avAttrubuteValue">@animal.Personality;</td>
                     </tr>
-                    <tr class="aVPrice">
-                        <td class="aVAttrubuteName">Ár:</td>
-                        <td class="aVAttrubuteValue">@animal.Price;</td>
+                    <tr class="avPrice">
+                        <td class="avAttrubuteName">Ár:</td>
+                        <td class="avAttrubuteValue">@animal.Price;</td>
                     </tr>
                 </table>
                 <button>Lefoglalom</button>
