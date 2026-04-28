@@ -7,6 +7,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using DotNetNuke.Collections;
+using DotNetNuke.Security;
+using DotNetNuke.Web.Mvc.Framework.ActionFilters;
+using DotNetNuke.Web.Mvc.Framework.Controllers;
+using System.Web.Mvc;
+using DotNetNuke.UI.Modules;
+using DotNetNuke.Entities.Modules;
 
 namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
@@ -105,11 +112,17 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             return CurrentAnimal;
         }
 
-        public string GetSpeciesBvin()
+        public string GetSpeciesBvin(string species)
         {
-            Models.Settings settings = new Models.Settings();
-            // bvin kiválasztás setting alapján
-            string animal = settings.Setting1;
+            _api = new Hotcakes.CommerceDTO.v1.Client.Api(StoreUrl, ApiKey);
+            var catResponse = _api.CategoriesFindAll();
+            if (catResponse.Content != null || catResponse.Errors.Count == 0)
+            {
+                var catBvin = (from cat in catResponse.Content
+                               where cat.Name == species
+                               select cat.Bvin).FirstOrDefault();
+                if(catBvin != null && catBvin != "" ) return catBvin;
+            }
 
             return "e197c105-c09e-47e0-af1a-918c43f3b74f";
         }

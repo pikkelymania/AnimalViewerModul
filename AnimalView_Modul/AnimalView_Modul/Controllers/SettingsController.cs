@@ -30,7 +30,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         public ActionResult Settings()
         {
             var settings = new Models.Settings();
-            settings.Setting1 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "valami");
+            settings.Setting1 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "Szakállas Agámák");
             settings.Setting2 = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting2", System.DateTime.Now);
             //settings.ModuleCategory = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimelView_Mudul_ModuleCategory", false);
 

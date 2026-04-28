@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using AnimalView.Dnn.AnimalView_Modul.Components;
+﻿using AnimalView.Dnn.AnimalView_Modul.Components;
 using AnimalView.Dnn.AnimalView_Modul.Models;
+using AnimalView.Dnn.AnimalView_Modul.Services;
+using DotNetNuke.Collections;
+using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using DotNetNuke.Entities.Modules;
-using AnimalView.Dnn.AnimalView_Modul.Services;
+using System.Web;
+using System.Web.Mvc;
 
 
 namespace AnimalView.Dnn.AnimalView_Modul.Controllers
@@ -28,7 +29,8 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         [ModuleAction]
         public ActionResult Index()
         {
-            List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin()); //Setting! majd
+            string species = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "Leopárdgekkók");
+            List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin(species)); //Setting! majd
             return View(Animals);
         }
 
