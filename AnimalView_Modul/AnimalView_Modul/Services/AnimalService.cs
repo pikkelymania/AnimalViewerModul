@@ -37,7 +37,8 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 {
                     foreach (var i in _RawAnimals)
                     {
-                        _Animals.Add(GetAnimalData(i));
+                        var animal = GetAnimalData(i);
+                        if(0 < _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityOnHand) _Animals.Add(animal);
                     }
                 }
                 
