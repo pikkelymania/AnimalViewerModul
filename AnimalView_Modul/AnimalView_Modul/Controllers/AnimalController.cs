@@ -30,7 +30,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         public ActionResult Index()
         {
             string species = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "Leopárdgekkók");
-            List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin(species)); //Setting! majd
+            List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin(species));
             return View(Animals);
         }
 

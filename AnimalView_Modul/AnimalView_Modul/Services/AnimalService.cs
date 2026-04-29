@@ -1,4 +1,5 @@
 ﻿using DotNetNuke.Collections;
+using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
@@ -41,7 +42,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                     foreach (var i in _RawAnimals)
                     {
                         var animal = GetAnimalData(i);
-                        if(0 < _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityOnHand) _Animals.Add(animal);
+                        if(0 < _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityOnHand - _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityReserved) _Animals.Add(animal);
                     }
                 }
                 
@@ -139,6 +140,8 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
 
             if(CurrentUser.UserID > 0)
             {
+                var orders = _api.OrdersFindAll().Content;
+                NewOrder.OrderNumber = (int.Parse((from x in orders orderby x.OrderNumber descending select x.OrderNumber).FirstOrDefault()) + 1).ToString();
                 NewOrder.BillingAddress = new AddressDTO
                 {
                     AddressType = AddressTypesDTO.Billing,
@@ -161,7 +164,11 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                     ProductSku = AnimalProduct.Content.Sku,
                     StoreId = AnimalProduct.Content.StoreId,
                     ProductName = AnimalProduct.Content.ProductName,
-                    BasePricePerItem = AnimalProduct.Content.SitePrice
+                    AdjustedPricePerItem = AnimalProduct.Content.SitePrice,
+                    BasePricePerItem = AnimalProduct.Content.SitePrice,
+                    LineTotal = AnimalProduct.Content.SitePrice,
+                    TaxPortion = decimal.Parse("0.27"),
+                    QuantityReturned = 1
                 };
                 NewOrder.Items.Add(Animal);
                 NewOrder.ShippingAddress = new AddressDTO();
@@ -170,8 +177,17 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 NewOrder.UserEmail = CurrentUser.Email;
                 NewOrder.UserID = CurrentUser.UserID.ToString();
                 NewOrder.IsPlaced = true;
-
+                NewOrder.TotalGrand = AnimalProduct.Content.SitePrice;
+                NewOrder.PaymentStatus = new OrderPaymentStatusDTO();
+                NewOrder.ShippingMethodId = "C107FBEF-C86D-46B9-A84F-3F9BC69E95AD";
+                NewOrder.ShippingMethodDisplayName = "Bolti átvétel";
+                NewOrder.StatusName = "Received";
+                NewOrder.StatusCode = "F37EC405-1EC6-4a91-9AC4-6836215FBBBC";
                 _api.OrdersCreate(NewOrder);
+
+                ProductInventoryDTO AnimalInventory = _api.ProductInventoryFindForProduct(AnimalBvin).Content.FirstOrDefault();
+                AnimalInventory.QuantityReserved = 1;
+                _api.ProductInventoryUpdate(AnimalInventory);
             }            
         }
     }
