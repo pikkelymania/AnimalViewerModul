@@ -16,31 +16,49 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 
-
 namespace AnimalView.Dnn.AnimalView_Modul.Controllers
 {
     [DnnHandleError]
     public class AnimalController : DnnController
     {
-        private readonly AnimalService _animalService = new AnimalService();
-        //private List<Models.Animal> Animals { get; set; }
+        private readonly AnimalService _animalService;
+
+        // 1. Eredeti konstruktor (ezt hívja a DotNetNuke élesben)
+        public AnimalController()
+        {
+            _animalService = new AnimalService();
+        }
+
+        // 2. Új konstruktor a teszteléshez (ide tudjuk beinjektálni a Moq-ot)
+        public AnimalController(AnimalService animalService)
+        {
+            _animalService = animalService;
+        }
+
+        // 3. Biztonságos függvény a DNN kontextus lekérésére (tesztben nem fagy le)
+        protected virtual string GetAnimalSetting()
+        {
+            if (ModuleContext == null || ModuleContext.Configuration == null)
+            {
+                return "Leopárdgekkók"; // Alapértelmezett érték tesztkörnyezetben
+            }
+            return ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "Leopárdgekkók");
+        }
 
         // GET: Animal
         [ModuleAction]
         public ActionResult Index()
         {
-            string species = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "Leopárdgekkók");
+            string species = GetAnimalSetting();
             List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin(species));
             return View(Animals);
         }
 
         // POST: Animal/Create
-        
         public ActionResult Create(string AnimalBvin)
         {
             try
             {
-                // TODO: Add insert logic here
                 _animalService.AddOrder(AnimalBvin);
                 return RedirectToAction("Index");
             }
@@ -49,6 +67,5 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
                 return View();
             }
         }
-
     }
 }
