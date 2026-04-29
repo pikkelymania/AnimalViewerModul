@@ -35,13 +35,13 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
         }
 
         // POST: Animal/Create
-        [HttpPost]
-        public ActionResult Create(string collection)
+        
+        public ActionResult Create(string AnimalBvin)
         {
             try
             {
                 // TODO: Add insert logic here
-                _animalService.AddOrder();
+                _animalService.AddOrder(AnimalBvin);
                 return RedirectToAction("Index");
             }
             catch

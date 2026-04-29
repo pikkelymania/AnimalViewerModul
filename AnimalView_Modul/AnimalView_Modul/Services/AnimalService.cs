@@ -1,19 +1,22 @@
-﻿using Hotcakes.Commerce.Accounts;
+﻿using DotNetNuke.Collections;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Portals;
+using DotNetNuke.Entities.Users;
+using DotNetNuke.Security;
+using DotNetNuke.UI.Modules;
+using DotNetNuke.Web.Mvc.Framework.ActionFilters;
+using DotNetNuke.Web.Mvc.Framework.Controllers;
+using Hotcakes.Commerce.Accounts;
 using Hotcakes.CommerceDTO.v1.Catalog;
 using Hotcakes.CommerceDTO.v1.Client;
+using Hotcakes.CommerceDTO.v1.Contacts;
 using Hotcakes.CommerceDTO.v1.Orders;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
-using DotNetNuke.Collections;
-using DotNetNuke.Security;
-using DotNetNuke.Web.Mvc.Framework.ActionFilters;
-using DotNetNuke.Web.Mvc.Framework.Controllers;
 using System.Web.Mvc;
-using DotNetNuke.UI.Modules;
-using DotNetNuke.Entities.Modules;
 
 namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
@@ -128,15 +131,48 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             return "e197c105-c09e-47e0-af1a-918c43f3b74f";
         }
 
-        public void AddOrder()
+        public void AddOrder(string AnimalBvin)
         {
-            OrderDTO NewOrder = new OrderDTO();
             _api = new Api(StoreUrl, ApiKey);
-            LineItemDTO OrderedAnimal = new LineItemDTO();
-            
-            NewOrder.Items.Add(OrderedAnimal);
-            
-            _api.OrdersCreate(NewOrder);
+            OrderDTO NewOrder = new OrderDTO();
+            UserInfo CurrentUser = PortalSettings.Current.UserInfo;
+
+            if(CurrentUser.UserID > 0)
+            {
+                NewOrder.BillingAddress = new AddressDTO
+                {
+                    AddressType = AddressTypesDTO.Billing,
+                    City = "West Palm Beach",
+                    CountryBvin = "BF7389A2-9B21-4D33-B276-23C9C18EA0C0",
+                    FirstName = CurrentUser.FirstName,
+                    LastName = CurrentUser.LastName,
+                    Line1 = "319 N. Clematis Street",
+                    Line2 = "Suite 500",
+                    Phone = "561-228-5319",
+                    PostalCode = "33401",
+                    RegionBvin = "7EBE4F07-A844-47B8-BDA8-863DDDF5C778"
+                };
+                NewOrder.Items = new List<LineItemDTO>();
+                var AnimalProduct = _api.ProductsFind(AnimalBvin);
+                LineItemDTO Animal = new LineItemDTO()
+                {
+                    ProductId = AnimalProduct.Content.Bvin,
+                    Quantity = 1,
+                    ProductSku = AnimalProduct.Content.Sku,
+                    StoreId = AnimalProduct.Content.StoreId,
+                    ProductName = AnimalProduct.Content.ProductName,
+                    BasePricePerItem = AnimalProduct.Content.SitePrice
+                };
+                NewOrder.Items.Add(Animal);
+                NewOrder.ShippingAddress = new AddressDTO();
+                NewOrder.ShippingAddress = NewOrder.BillingAddress;
+                NewOrder.ShippingAddress.AddressType = AddressTypesDTO.Shipping;
+                NewOrder.UserEmail = CurrentUser.Email;
+                NewOrder.UserID = CurrentUser.UserID.ToString();
+                NewOrder.IsPlaced = true;
+
+                _api.OrdersCreate(NewOrder);
+            }            
         }
     }
 }

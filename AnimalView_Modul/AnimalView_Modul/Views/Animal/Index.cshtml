@@ -1,5 +1,5 @@
 ﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<List<AnimalView.Dnn.AnimalView_Modul.Models.Animal>>
-
+@using System.Security.Principal;
 @*@{
         Layout = null;
     }*@
@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick-theme.css">
 <style>
         .slider {
-            width: 100%;
+            width: 90%;
             min-width: 280px;
             margin: 100px auto;
         }
@@ -61,7 +61,7 @@ else
                         <td class="avAttrubuteValue">@animal.Price;</td>
                     </tr>
                 </table>
-                <button>Lefoglalom</button>
+                <a href="@Url.Action("Create","Animal", new{ AnimalBvin = animal.AnimalId})">Lefoglalom</a>
             </div>
         }
     </section>
