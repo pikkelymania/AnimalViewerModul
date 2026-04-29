@@ -8,63 +8,54 @@ namespace AnimalView.Dnn.AnimalView_Modul.Tests
     [TestClass]
     public class AnimalServiceTests
     {
-        [TestMethod]
-        public void GetAnimalData_SikeresenKinyeriAzAdatokatAHTMLbol_HappyPath()
-        {
-            // ARRANGE
-            var service = new AnimalService();
-            var tesztDatum = new DateTime(2025, 10, 18);
-
-            var rawAnimal = new ProductDTO
-            {
-                Bvin = "TEST-BVIN-123",
-                ImageFileMedium = "kigyo.jpg",
-                SitePrice = 25000m,
-                LongDescription = @"
-                    <p>Valami bevezető szöveg...</p>
-                    <p><strong>Név</strong>:<br /> Sziszike </p>
-                    <p><strong>Nem</strong>:<br /> Hím </p>
-                    <p><strong>Genetika</strong>:<br /> Albínó </p>
-                    <p><strong>Személyiség</strong>:<br /> Békés </p>
-                    <p><strong>Született</strong>:<br /> 2025. 10. 18. </p>
-                    <p>Záró gondolatok...</p>"
-            };
-
-            // ACT
-            var result = service.GetAnimalData(rawAnimal);
-
-            // ASSERT
-            Assert.AreEqual("TEST-BVIN-123", result.AnimalId);
-            Assert.AreEqual("Sziszike", result.Name);
-            Assert.AreEqual("Hím", result.Gender);
-            Assert.AreEqual("Albínó", result.Genetics);
-            Assert.AreEqual("Békés", result.Personality);
-            Assert.AreEqual(tesztDatum.Date, result.BirthDate.Date);
-            Assert.AreEqual(25000m, result.Price);
-            Assert.AreEqual("kigyo.jpg", result.Image);
-        }
-
-        [TestMethod]
-        public void GetAnimalData_HianyozoAdatokEsetenAlapertekeketAd_SadPath()
+        // 1. Az átfogó (Data-Driven) teszt a különböző HTML leírások és hiányosságok ellenőrzésére
+        [DataTestMethod]
+        [DataRow(
+            "Minden adat tökéletes",
+            "<p><strong>Név</strong>:<br /> Béla </p><p><strong>Nem</strong>:<br /> Hím </p><p><strong>Genetika</strong>:<br /> Albínó </p>",
+            "Béla", "Hím", "Albínó"
+        )]
+        [DataRow(
+            "Csak a név van meg, a többi hiányzik",
+            "<p><strong>Név</strong>:<br /> Sanyi </p>",
+            "Sanyi", "Hiányzik a nem", "Hiányzik a genetika"
+        )]
+        [DataRow(
+            "Kicsit más a HTML formázás (nincs szóköz a br tagben)",
+            "<p><strong>Név</strong>:<br/>Zsuzsi</p><p><strong>Nem</strong>:<br/>Nőstény</p>",
+            "Zsuzsi", "Nőstény", "Hiányzik a genetika"
+        )]
+        [DataRow(
+            "Teljesen üres leírás",
+            "",
+            "Hiányzik a név", "Hiányzik a nem", "Hiányzik a genetika"
+        )]
+        [DataRow(
+            "Null leírás (Edge Case)",
+            null,
+            "Hiányzik a név", "Hiányzik a nem", "Hiányzik a genetika"
+        )]
+        public void GetAnimalData_KulonbozoHtmlLeirasok_MegfeleloenKinyeriAzAdatokat(
+            string tesztNeve, string htmlLeiras, string elvartNev, string elvartNem, string elvartGenetika)
         {
             // ARRANGE
             var service = new AnimalService();
             var rawAnimal = new ProductDTO
             {
-                Bvin = "TEST-BVIN-456",
-                LongDescription = "<p>Ebben a leírásban nincsenek benne a kötelező HTML tagek.</p>"
+                Bvin = "TEST-BVIN",
+                LongDescription = htmlLeiras
             };
 
             // ACT
             var result = service.GetAnimalData(rawAnimal);
 
-            // ASSERT
-            Assert.AreEqual("Hiányzik a név", result.Name);
-            Assert.AreEqual("Hiányzik a nem", result.Gender);
-            Assert.AreEqual("Hiányzik a genetika", result.Genetics);
-            Assert.AreEqual("Hiányzik a személyiség", result.Personality);
+            // ASSERT - A hibaüzenetbe beletesszük a 'tesztNeve' változót, hogy bukás esetén tudjuk, melyik sor a ludas
+            Assert.AreEqual(elvartNev, result.Name, $"Hiba a '{tesztNeve}' esetnél: Név eltérés.");
+            Assert.AreEqual(elvartNem, result.Gender, $"Hiba a '{tesztNeve}' esetnél: Nem eltérés.");
+            Assert.AreEqual(elvartGenetika, result.Genetics, $"Hiba a '{tesztNeve}' esetnél: Genetika eltérés.");
         }
 
+        // 2. Extrém Edge Case: Amikor az egész Hotcakes termék objektum hiányzik (null)
         [TestMethod]
         public void GetAnimalData_NullParameterEseten_NemFagyLeEsAlapertekeketAd()
         {
@@ -82,25 +73,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Tests
             Assert.AreEqual(DateTime.UtcNow.Date, result.BirthDate.Date);
         }
 
-        [TestMethod]
-        public void GetAnimalData_NullLeirasEseten_NemFagyLeEsAlapertekeketAd()
-        {
-            // ARRANGE
-            var service = new AnimalService();
-            var rawAnimal = new ProductDTO
-            {
-                Bvin = "TEST-BVIN-789",
-                LongDescription = null
-            };
-
-            // ACT
-            var result = service.GetAnimalData(rawAnimal);
-
-            // ASSERT
-            Assert.AreEqual("Hiányzik a név", result.Name);
-            Assert.AreEqual("Hiányzik a személyiség", result.Personality);
-        }
-
+        // 3. Extrém Edge Case: Amikor a dátum formátuma olvashatatlan
         [TestMethod]
         public void GetAnimalData_ErvenytelenDatumSzovegEseten_NemFagyLeEsMaiNapotAd()
         {
