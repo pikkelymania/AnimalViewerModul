@@ -21,33 +21,97 @@ using System.Web.Mvc;
 
 namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
+    // 1. A WRAPPER INTERFÉSZ (Ezt fogjuk szimulálni a Moq-kal)
+    public interface IHotcakesApiService
+    {
+        List<ProductDTO> GetProductsByCategory(string categoryId);
+        int GetAvailableQuantity(string bvin);
+        string GetCategoryBvinByName(string categoryName);
+    }
+
+    // 2. A VALÓS IMPLEMENTÁCIÓ (Éles környezetben ez hívja a weboldalt)
+    public class HotcakesApiService : IHotcakesApiService
+    {
+        private Api _api;
+        private string StoreUrl = "http://www.pikkelymania.hu/";
+        private string ApiKey = "1-45782d8b-85b9-4924-aafe-ea09050cbc9e";
+
+        public HotcakesApiService()
+        {
+            _api = new Api(StoreUrl, ApiKey);
+        }
+
+        public List<ProductDTO> GetProductsByCategory(string categoryId)
+        {
+            var response = _api.ProductsFindForCategory(categoryId, 1, 100);
+            if (response.Content != null && response.Errors.Count == 0) return response.Content.Products;
+            return new List<ProductDTO>();
+        }
+
+        public int GetAvailableQuantity(string bvin)
+        {
+            var response = _api.ProductInventoryFindForProduct(bvin);
+            if (response.Content != null && response.Errors.Count == 0)
+            {
+                var inventory = response.Content.FirstOrDefault();
+                // A fejlesztő új logikája: QuantityOnHand - QuantityReserved
+                if (inventory != null) return inventory.QuantityOnHand - inventory.QuantityReserved;
+            }
+            return 0;
+        }
+
+        public string GetCategoryBvinByName(string categoryName)
+        {
+            var response = _api.CategoriesFindAll();
+            if (response.Content != null && response.Errors.Count == 0)
+            {
+                var cat = response.Content.FirstOrDefault(c => c.Name == categoryName);
+                if (cat != null) return cat.Bvin;
+            }
+            return "e197c105-c09e-47e0-af1a-918c43f3b74f";
+        }
+    }
+
+    // 3. A FŐ SERVICE OSZTÁLY
     public class AnimalService
     {
         private List<Models.Animal> _Animals = new List<Models.Animal>();
-        //private List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals = new List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO>();
+        private readonly IHotcakesApiService _apiService;
 
-        private Hotcakes.CommerceDTO.v1.Client.Api _api;
+        // Ezt csak az AddOrder használja, mert azt nem teszteljük
         private string StoreUrl = "http://www.pikkelymania.hu/";
         private string ApiKey = "1-45782d8b-85b9-4924-aafe-ea09050cbc9e";
-        
+
+        // Alap konstruktor éles használatra
+        public AnimalService()
+        {
+            _apiService = new HotcakesApiService();
+        }
+
+        // Teszt konstruktor a Moq-hoz
+        public AnimalService(IHotcakesApiService apiService)
+        {
+            _apiService = apiService;
+        }
+
         public List<Models.Animal> GetAnimals(string CatId)
         {
-            _api = new Hotcakes.CommerceDTO.v1.Client.Api(StoreUrl, ApiKey);
-            var catResponse = _api.ProductsFindForCategory(CatId, 1, 100);
-            if (catResponse.Content != null || catResponse.Errors.Count == 0)
+            List<ProductDTO> rawAnimals = _apiService.GetProductsByCategory(CatId);
+
+            if (rawAnimals != null && rawAnimals.Count > 0)
             {
-                List<Hotcakes.CommerceDTO.v1.Catalog.ProductDTO> _RawAnimals = catResponse.Content.Products;
-                if(_RawAnimals.Count > 0)
+                foreach (var i in rawAnimals)
                 {
-                    foreach (var i in _RawAnimals)
+                    var animal = GetAnimalData(i);
+                    // Az új fejlesztői logika a Wrapperen keresztül
+                    if (0 < _apiService.GetAvailableQuantity(i.Bvin))
                     {
-                        var animal = GetAnimalData(i);
-                        if(0 < _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityOnHand - _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityReserved) _Animals.Add(animal);
+                        _Animals.Add(animal);
                     }
                 }
-                
             }
-            if(_Animals.Count() == 0)
+
+            if (_Animals.Count == 0)
             {
                 Models.Animal a = new Models.Animal()
                 {
@@ -60,52 +124,53 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                     Personality = "szem.",
                     Price = 0
                 };
-                _Animals.Append(a);
+                _Animals.Add(a); // Append helyett Add, hogy tényleg bekerüljön a listába!
             }
             return _Animals;
         }
 
         public Models.Animal GetAnimalData(ProductDTO RawAnimal)
         {
-            string LongDescription = RawAnimal.LongDescription;
-            string AName;
-            string AGender;
-            string AGenetics;
-            string APersonality;
+            // Visszatettem a Null védelmeket, hogy a tesztjeink működjenek
+            if (RawAnimal == null)
+            {
+                return new Models.Animal()
+                {
+                    AnimalId = "N/A",
+                    Name = "Hiányzik a név",
+                    Gender = "Hiányzik a nem",
+                    Genetics = "Hiányzik a genetika",
+                    Personality = "Hiányzik a személyiség",
+                    BirthDate = DateTime.UtcNow,
+                    Price = 0
+                };
+            }
+
+            string LongDescription = RawAnimal.LongDescription ?? string.Empty;
+            string AName; string AGender; string AGenetics; string APersonality;
             DateTime ABirthDate = DateTime.UtcNow;
 
             var matchNev = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Név</strong>:\s*<br\s*/>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
-            if (matchNev.Success) AName = matchNev.Groups[1].Value.Trim();
-            else AName = "Hiányzik a név";
+            if (matchNev.Success) AName = matchNev.Groups[1].Value.Trim(); else AName = "Hiányzik a név";
 
-            // Nem kinyerése
             var matchNem = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Nem</strong>:\s*<br\s*/>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
-            if (matchNem.Success) AGender = matchNem.Groups[1].Value.Trim();
-            else AGender = "Hiányzik a nem";
+            if (matchNem.Success) AGender = matchNem.Groups[1].Value.Trim(); else AGender = "Hiányzik a nem";
 
-            // Genetika kinyerése
             var matchGenetika = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Genetika</strong>:\s*<br\s*/>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
-            if (matchGenetika.Success) AGenetics = matchGenetika.Groups[1].Value.Trim();
-            else AGenetics = "Hiányzik a genetika";
+            if (matchGenetika.Success) AGenetics = matchGenetika.Groups[1].Value.Trim(); else AGenetics = "Hiányzik a genetika";
 
-            // Személyiség kinyerése
             var matchSzemelyiseg = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Személyiség</strong>:\s*<br\s*/>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
-            if (matchSzemelyiseg.Success) APersonality = matchSzemelyiseg.Groups[1].Value.Trim();
-            else APersonality = "Hiányzik a személyiség";
+            if (matchSzemelyiseg.Success) APersonality = matchSzemelyiseg.Groups[1].Value.Trim(); else APersonality = "Hiányzik a személyiség";
 
-            // Dátum kinyerése
             var matchSzuletett = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Született</strong>:\s*<br\s*/>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
             if (matchSzuletett.Success)
             {
                 string datumSzoveg = matchSzuletett.Groups[1].Value.Trim();
-                // A sima TryParse a magyar gépeken megérti a "2025.10.18." és a "2025. 10. 18." formátumot is
-                if (DateTime.TryParse(datumSzoveg, out DateTime parsedDate))
-                {
-                    ABirthDate = parsedDate;
-                }
+                if (DateTime.TryParse(datumSzoveg, out DateTime parsedDate)) { ABirthDate = parsedDate; }
             }
 
-            Models.Animal CurrentAnimal = new Models.Animal() { 
+            return new Models.Animal()
+            {
                 AnimalId = RawAnimal.Bvin,
                 Name = AName,
                 Image = RawAnimal.ImageFileMedium,
@@ -113,32 +178,22 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 BirthDate = ABirthDate,
                 Gender = AGender,
                 Genetics = AGenetics,
-                Personality = APersonality};
-            return CurrentAnimal;
+                Personality = APersonality
+            };
         }
 
         public string GetSpeciesBvin(string species)
         {
-            _api = new Hotcakes.CommerceDTO.v1.Client.Api(StoreUrl, ApiKey);
-            var catResponse = _api.CategoriesFindAll();
-            if (catResponse.Content != null || catResponse.Errors.Count == 0)
-            {
-                var catBvin = (from cat in catResponse.Content
-                               where cat.Name == species
-                               select cat.Bvin).FirstOrDefault();
-                if(catBvin != null && catBvin != "" ) return catBvin;
-            }
-
-            return "e197c105-c09e-47e0-af1a-918c43f3b74f";
+            return _apiService.GetCategoryBvinByName(species);
         }
 
         public void AddOrder(string AnimalBvin)
         {
-            _api = new Api(StoreUrl, ApiKey);
+            var _api = new Api(StoreUrl, ApiKey);
             OrderDTO NewOrder = new OrderDTO();
             UserInfo CurrentUser = PortalSettings.Current.UserInfo;
 
-            if(CurrentUser.UserID > 0)
+            if (CurrentUser.UserID > 0)
             {
                 var orders = _api.OrdersFindAll().Content;
                 NewOrder.OrderNumber = (int.Parse((from x in orders orderby x.OrderNumber descending select x.OrderNumber).FirstOrDefault()) + 1).ToString();
@@ -188,7 +243,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 ProductInventoryDTO AnimalInventory = _api.ProductInventoryFindForProduct(AnimalBvin).Content.FirstOrDefault();
                 AnimalInventory.QuantityReserved = 1;
                 _api.ProductInventoryUpdate(AnimalInventory);
-            }            
+            }
         }
     }
 }

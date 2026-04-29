@@ -14,7 +14,7 @@
     <RootNamespace>AnimalView.Dnn.AnimalView_Modul</RootNamespace>
     <AssemblyName>AnimalView_Modul</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -51,6 +51,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\bin\DotNetNuke.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Hotcakes.CommerceDTO, Version=3.9.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\Hotcakes.CommerceDTO.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\bin\Microsoft.ApplicationBlocks.Data.dll</HintPath>
@@ -77,10 +81,6 @@
     </Reference>
     <Reference Include="Hotcakes.Commerce.Dnn, Version=3.9.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\bin\Hotcakes.Commerce.Dnn.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Hotcakes.CommerceDTO.Dnn, Version=3.9.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\bin\Hotcakes.CommerceDTO.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -197,9 +197,7 @@
           <DevelopmentServerPort>51131</DevelopmentServerPort>
           <DevelopmentServerVPath>
           </DevelopmentServerVPath>
-          <IISUrl>http://www.dnndev.me/desktopmodules/mvc/AnimalView_Modul</IISUrl>
-          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>http://www.dnndev.me</IISAppRootUrl>
+          <IISUrl>http://localhost:51131/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
