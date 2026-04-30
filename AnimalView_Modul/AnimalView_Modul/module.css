@@ -1,35 +1,42 @@
-.avImage{
-    border: 5px solid #2D5A4C;
-    margin: 2%;
+.avImage {
+    border: 5px solid #2D5A4C !important;
+    margin: 2% !important;
 }
-.avTable{
-    border: 3px solid #2D5A4C;
-    border-radius: 10px;
-    margin: 2%;
-    background-color: #EFF5F2;
+
+.avTable {
+    border: 3px solid #2D5A4C !important;
+    border-radius: 10px !important;
+    margin: 2% !important;
+    background-color: #EFF5F2 !important;
 }
-.avTable tr{
-    border-radius: 10px;
+
+    .avTable tr {
+        border-radius: 10px !important;
+    }
+
+    .avTable td {
+        border-radius: 10px !important;
+        margin: 1% !important;
+        padding: 2px !important;
+    }
+
+
+.slider a {
+    background-color: #2D5A4C !important;
+    color: #FFD700 !important;
+    border-radius: 10px !important;
+    padding: 5px !important;
+    align-self: center !important;
+    margin: 3px !important;
+    font-weight: bold !important;
 }
-.avTable td{border-radius: 10px;
-            margin: 1%;
-            padding: 2px;
-}
-.slider a{
-    background-color: #2D5A4C;
-    color: #FFD700;
-    border-radius: 10px;
-    padding: 2%;
-    align-self: center;
-    margin: 2%;
-}
-.slider a:hover{
-    background-color: #7BC755;
-    color: #EFF5F2;
-}
+
+    .slider a:hover {
+        background-color: #7BC755 !important;
+        color: #EFF5F2 !important;
+        text-decoration: none !important;
+    }
+
 .slider div {
-    margin: 5px;
-}
-.slick-slide{
-    align-items: center;
+    margin: 5px !important;
 }
