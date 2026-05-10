@@ -18,6 +18,10 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Hotcakes.Commerce;
+using Hotcakes.Commerce.Utilities;
+using System.Net.Mail;
+using DotNetNuke.Services.Mail;
 
 namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
@@ -188,6 +192,18 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 ProductInventoryDTO AnimalInventory = _api.ProductInventoryFindForProduct(AnimalBvin).Content.FirstOrDefault();
                 AnimalInventory.QuantityReserved = 1;
                 _api.ProductInventoryUpdate(AnimalInventory);
+
+
+                var hccApp = HotcakesApplication.Current;
+                var store = hccApp.CurrentStore;
+
+                // A Hotcakes Store-ban beállított e-mail cím használata feladóként
+                string fromEmail = "pikkelymania@gmail.com";
+                string toEmail = NewOrder.UserEmail;
+                string subject = "Sikeres foglalás";
+                string body = "Ön sikeresen lefoglalt egy állatot a Pikkelymánia.hu webhelyen. Az üzletben tudja majd átvenni és kifizetni. <br>Köszonjük foglalását!";
+
+                Mail.SendEmail(fromEmail, toEmail, subject, body);
             }            
         }
     }
