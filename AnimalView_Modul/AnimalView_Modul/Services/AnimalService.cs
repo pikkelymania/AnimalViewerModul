@@ -113,7 +113,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 AnimalId = RawAnimal.Bvin,
                 Name = AName,
                 Image = RawAnimal.ImageFileMedium,
-                Price = RawAnimal.SitePrice,
+                Price = (int) RawAnimal.SitePrice,
                 BirthDate = ABirthDate,
                 Gender = AGender,
                 Genetics = AGenetics,
