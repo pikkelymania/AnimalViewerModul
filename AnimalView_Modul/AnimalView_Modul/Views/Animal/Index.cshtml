@@ -9,7 +9,7 @@
         .slider {
             width: 90%;
             min-width: 280px;
-            margin: 100px auto;
+            margin: 10px auto;
         }
         .slick-slide {margin: 0px 5px;}
         .slick-slide img {width: 100%;}
@@ -35,32 +35,76 @@ else
         {
             <div>
                 <img class="avImage" src="http://98.71.34.143:80/Portals/0/Hotcakes/Data/products/@animal.AnimalId/medium/@animal.Image" alt=@animal.Image ; />
-                <table class="avTable">
-                    <tr>
-                        <td class="avAttrubuteName">Név: </td>
-                        <td class="avAttrubuteValue">@animal.Name;</td>
-                    </tr>
-                    <tr>
-                        <td class="avAttrubuteName">Nem: </td>
-                        <td class="avAttrubuteValue">@animal.Gender;</td>
-                    </tr>
-                    <tr>
-                        <td class="avAttrubuteName">Születési idő:</td>
-                        <td class="avAttrubuteValue">@animal.BirthDate;</td>
-                    </tr>
-                    <tr>
-                        <td class="avAttrubuteName">Genetika: </td>
-                        <td class="avAttrubuteValue">@animal.Genetics;</td>
-                    </tr>
-                    <tr>
-                        <td class="avAttrubuteName">Személyiség: </td>
-                        <td class="avAttrubuteValue">@animal.Personality;</td>
-                    </tr>
-                    <tr class="avPrice">
-                        <td class="avAttrubuteName">Ár:</td>
-                        <td class="avAttrubuteValue">@animal.Price Ft</td>
-                    </tr>
-                </table>
+                @if (animal.IsFish)
+                {
+                    <table class="avTable">
+                        <tr>
+                            <td class="avAttrubuteName">Név: </td>
+                            <td class="avAttrubuteValue">@animal.Name;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Születési idő:</td>
+                            <td class="avAttrubuteValue">@animal.BirthDate;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Jellemzők: </td>
+                            <td class="avAttrubuteValue">@animal.Traits;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Tartása: </td>
+                            <td class="avAttrubuteValue">@animal.Care;</td>
+                        </tr>
+                        <tr class="avPrice">
+                            <td class="avAttrubuteName">Vízparaméterek:</td>
+                            <td class="avAttrubuteValue">@animal.Water</td>
+                        </tr>
+                        <tr class="avPrice">
+                            <td class="avAttrubuteName">Táplálkozás:</td>
+                            <td class="avAttrubuteValue">@animal.Feeding</td>
+                        </tr>
+                        <tr class="avPrice">
+                            <td class="avAttrubuteName">Szaporítása:</td>
+                            <td class="avAttrubuteValue">@animal.Breeding</td>
+                        </tr>
+                        <tr class="avPrice">
+                            <td class="avAttrubuteName">Elérhető:</td>
+                            <td class="avAttrubuteValue">@animal.Quantity Darab</td>
+                        </tr>
+                        <tr class="avPrice">
+                            <td class="avAttrubuteName">Ár:</td>
+                            <td class="avAttrubuteValue">@animal.Price Ft</td>
+                        </tr>
+                    </table>
+                }
+                else
+                {
+                    <table class="avTable">
+                        <tr>
+                            <td class="avAttrubuteName">Név: </td>
+                            <td class="avAttrubuteValue">@animal.Name;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Nem: </td>
+                            <td class="avAttrubuteValue">@animal.Gender;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Születési idő:</td>
+                            <td class="avAttrubuteValue">@animal.BirthDate;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Genetika: </td>
+                            <td class="avAttrubuteValue">@animal.Genetics;</td>
+                        </tr>
+                        <tr>
+                            <td class="avAttrubuteName">Személyiség: </td>
+                            <td class="avAttrubuteValue">@animal.Personality;</td>
+                        </tr>
+                        <tr class="avPrice">
+                            <td class="avAttrubuteName">Ár:</td>
+                            <td class="avAttrubuteValue">@animal.Price Ft</td>
+                        </tr>
+                    </table>
+                }
                 <a href="@Url.Action("Create","Animal", new{ AnimalBvin = animal.AnimalId})">Lefoglalom</a>
             </div>
         }

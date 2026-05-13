@@ -1,13 +1,17 @@
-﻿using DotNetNuke.Collections;
+﻿using AnimalView.Dnn.AnimalView_Modul.Models;
+using DotNetNuke.Collections;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.Entities.Modules;
 using DotNetNuke.Entities.Portals;
 using DotNetNuke.Entities.Users;
 using DotNetNuke.Security;
+using DotNetNuke.Services.Mail;
 using DotNetNuke.UI.Modules;
 using DotNetNuke.Web.Mvc.Framework.ActionFilters;
 using DotNetNuke.Web.Mvc.Framework.Controllers;
+using Hotcakes.Commerce;
 using Hotcakes.Commerce.Accounts;
+using Hotcakes.Commerce.Utilities;
 using Hotcakes.CommerceDTO.v1.Catalog;
 using Hotcakes.CommerceDTO.v1.Client;
 using Hotcakes.CommerceDTO.v1.Contacts;
@@ -16,12 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
-using Hotcakes.Commerce;
-using Hotcakes.Commerce.Utilities;
-using System.Net.Mail;
-using DotNetNuke.Services.Mail;
 
 namespace AnimalView.Dnn.AnimalView_Modul.Services
 {
@@ -45,7 +46,9 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 {
                     foreach (var i in _RawAnimals)
                     {
-                        var animal = GetAnimalData(i);
+                        var category = _api.CategoriesFindForProduct(i.Bvin);
+                        var parentId = category.Content.ToList();
+                        var animal = GetAnimalData(i,parentId);
                         if(0 < _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityOnHand - _api.ProductInventoryFindForProduct(i.Bvin).Content.FirstOrDefault().QuantityReserved) _Animals.Add(animal);
                     }
                 }
@@ -69,14 +72,28 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             return _Animals;
         }
 
-        public Models.Animal GetAnimalData(ProductDTO RawAnimal)
+        public Models.Animal GetAnimalData(ProductDTO RawAnimal, List<CategorySnapshotDTO> OwnCategories)
         {
+            bool AIsFish = false;
             string LongDescription = RawAnimal.LongDescription;
             string AName;
             string AGender;
             string AGenetics;
             string APersonality;
             DateTime ABirthDate = DateTime.UtcNow;
+
+            string ATraits = "Nincsenek jellemzők";
+            string ACare = "Nincsenek tartásra vonatkozó információk";
+            string AWater = "Nincsenek vízparaméterek";
+            string AFeeding = "Nincsenek táplálkozás információk";
+            string ABreeding = "Nincsenek szaporítással kapcsolatos információk";
+            int AQuantity = 1;
+
+            foreach (var i in OwnCategories)
+            {
+                if (i.Bvin == "52f55a24-db6d-413e-8c24-0e127e7353c3") AIsFish = true;
+            }
+            
 
             var matchNev = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Név</strong>:\s*<br\s*/>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
             if (matchNev.Success) AName = matchNev.Groups[1].Value.Trim();
@@ -109,7 +126,31 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 }
             }
 
+            if (AIsFish) AName = RawAnimal.ProductName;
+            // Jellemzők kinyerése
+            var matchJellemzok = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Jellemzők</strong>:\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
+            if (matchJellemzok.Success) ATraits = System.Net.WebUtility.HtmlDecode(matchJellemzok.Groups[1].Value.Trim());
+
+            // Tartás kinyerése (Figyelve a "Tart&aacute;s" és "Tartás" verziókra is)
+            var matchTartas = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Tart(?:ás|&aacute;s)</strong>:\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
+            if (matchTartas.Success) ACare = System.Net.WebUtility.HtmlDecode(matchTartas.Groups[1].Value.Trim());
+
+            // Vízparaméterek kinyerése
+            var matchViz = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>V(?:ízparaméterek|&iacute;zparam&eacute;terek)</strong>:\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
+            if (matchViz.Success) AWater = System.Net.WebUtility.HtmlDecode(matchViz.Groups[1].Value.Trim());
+
+            // Táplálkozás kinyerése
+            var matchTaplalkozas = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>T(?:áplálkozás|&aacute;pl&aacute;lkoz&aacute;s)</strong>:\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
+            if (matchTaplalkozas.Success) AFeeding = System.Net.WebUtility.HtmlDecode(matchTaplalkozas.Groups[1].Value.Trim());
+
+            // Szaporítás kinyerése
+            var matchSzaporitas = System.Text.RegularExpressions.Regex.Match(LongDescription, @"<strong>Szapor(?:ítás|&iacute;t&aacute;s)</strong>:\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline);
+            if (matchSzaporitas.Success) ABreeding = System.Net.WebUtility.HtmlDecode(matchSzaporitas.Groups[1].Value.Trim());
+
+            AQuantity = _api.ProductInventoryFindForProduct(RawAnimal.Bvin).Content.FirstOrDefault().QuantityOnHand - _api.ProductInventoryFindForProduct(RawAnimal.Bvin).Content.FirstOrDefault().QuantityReserved;
+
             Models.Animal CurrentAnimal = new Models.Animal() { 
+                IsFish = AIsFish,
                 AnimalId = RawAnimal.Bvin,
                 Name = AName,
                 Image = RawAnimal.ImageFileMedium,
@@ -117,7 +158,13 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 BirthDate = ABirthDate,
                 Gender = AGender,
                 Genetics = AGenetics,
-                Personality = APersonality};
+                Personality = APersonality,
+                Traits = ATraits,
+                Care = ACare,
+                Water = AWater,
+                Feeding = AFeeding,
+                Breeding = ABreeding,
+                Quantity = AQuantity};
             return CurrentAnimal;
         }
 
