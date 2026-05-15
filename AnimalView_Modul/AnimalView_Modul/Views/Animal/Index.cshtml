@@ -22,6 +22,119 @@
         }
         .slick-active { opacity: .5; }
         .slick-current { opacity: 1; }
+        #popUp_@Model[0].AnimalId{
+            /*margin: 20vh 30vw 0 30vw;*/
+            margin:0;
+            background-color: rgba(0,0,0,0.5);
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1000000;
+            padding: 0;
+            opacity: 1;
+            font-family: Quicksand, sans-serif;
+        }
+    .avPopUpWindow {
+        width: 300px;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+        opacity: 1;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        background-color: #ffffff;
+    }
+        .avCancelX {
+            width: 26px;
+            height: 26px;
+            margin: 6px 6px 0 268px;
+            padding: 3px;
+            text-align: center;
+            font-size: 22px;
+            color: #2D5A4C;
+            background-color: #EFF5F2;
+            font-weight: bold;
+            min-width: 20px;
+            min-height: 20px;
+            border-radius: 5px;
+        }
+            .avCancelX:hover {
+                text-align: center;
+                font-size: 22px;
+                text-decoration: none;
+                color: #EFF5F2;
+                background-color: red;
+                font-weight: bold;
+                cursor: pointer;
+            }        
+        .avPopUpText {
+            width: 100%;
+            margin-bottom: 10px;
+            margin-top: 30px;
+            font-family: Quicksand, sans-serif;
+            text-align: center;
+            font-size: 22px;
+        }
+        .avPopUpWindow input {
+            width: 50px;
+            margin: 0 125px 10px 125px;
+            border: solid 1.6px rgb(239, 245, 242);
+            border-radius: 5px;
+            font-family: Quicksand, sans-serif;
+        }
+        .avPopUpWindow input[type=number]:focus{border: solid 1.6px rgb(123,199,85); outline:solid 0px rgb(123,199,85)}
+        .avReserveButton {
+            /*width: 120px;
+            margin: 0 90px;*/
+            width:fit-content;
+            margin: 0 auto;
+            font-family: Quicksand, sans-serif;
+            text-align: center;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #FFD700;
+            color: #2D5A4C;
+            border-radius: 30px;
+            box-shadow: rgba(0, 0, 0, 0.6) 0px 1px 0px 0px;
+        }
+            .avReserveButton:hover {
+                text-decoration: none;
+                color: #2D5A4C;
+                background-color: rgb(230, 194, 0);
+                transform: translateY(-2px);
+                cursor: pointer;
+            }
+            .avReserveButton:visited{color:#2D5A4C;}
+        .avCancelButton {
+            width: 80px;
+            margin: 10px 110px 10px 110px;
+            padding: 10px;
+            font-family: Quicksand, sans-serif;
+            text-align: center;
+            font-size: 18px;
+            color: #2D5A4C;
+            background-color: #EFF5F2;
+            border: solid 0.8px rgb(194, 194, 194);
+            border-radius: 30px;
+            box-shadow: rgba(0, 0, 0, 0.6) 0px 1px 0px 0px;
+        }
+            .avCancelButton:hover {
+                font-family: Quicksand, sans-serif;
+                text-decoration: none;
+                color: #2D5A4C;
+                background-color: rgb(224, 233, 229);
+                /*transform: scale(1.1);*/
+                cursor: pointer;
+            }
+            .avCancelButton:visited{color:#2D5A4C;}
+        
+    
 </style>
 
 @if (Model.Count == 0)
@@ -37,7 +150,7 @@ else
                 <img class="avImage" src="http://98.71.34.143:80/Portals/0/Hotcakes/Data/products/@animal.AnimalId/medium/@animal.Image" alt=@animal.Image ; />
                 @if (animal.IsFish)
                 {
-                    <table class="avTable">
+                    <table class="avTable" style="border-radius:10px">
                         <tr>
                             <td class="avAttrubuteName">Név: </td>
                             <td class="avAttrubuteValue">@animal.Name;</td>
@@ -105,10 +218,36 @@ else
                         </tr>
                     </table>
                 }
-                <a href="@Url.Action("Create","Animal", new{ AnimalBvin = animal.AnimalId})">Lefoglalom</a>
+                <!--a href="@Url.Action("Create","Animal", new{ AnimalBvin = animal.AnimalId})">Lefoglalom</a-->
+                <a id="Reserve_@animal.AnimalId">Lefoglalom</a>
             </div>
         }
     </section>
+    <div id="popUp_@Model[0].AnimalId" class="dnnFormPopup">
+        @foreach(var animal in Model) { 
+            <div id="PopUp_@animal.AnimalId" style="display:none" class="avPopUpWindow">
+                <a id="Cancel1_@animal.AnimalId" class="avCancelX">X</a>
+                @if (animal.IsFish)
+                {
+                    <p class="avPopUpText">Hányat szeretnél lefoglalni?</p>
+                    <input type="number" min="1" max=@animal.Quantity step="1" value="1" id="avQnt_@animal.AnimalId" />
+                    <a href="@Url.Action("Create", "Animal", new { AnimalBvin = animal.AnimalId, AnimalQuantity = 1 })" id="avRes_@animal.AnimalId" class="avReserveButton">Lefoglalom</a>
+
+                }
+                else{
+                    <p class="avPopUpText">Biztosan lefoglalod?</p>
+                    <a href="@Url.Action("Create", "Animal", new { AnimalBvin = animal.AnimalId, AnimalQuantity = 1 })" class="avReserveButton">Lefoglalom</a>
+                }
+                <a id="Cancel2_@animal.AnimalId" class="avCancelButton">Mégse</a>
+            </div>
+        }
+        <div id="PleaseLoginPopUp" style="display:none" class="avPopUpWindow">
+            <a id="Cancel3" class="avCancelX">X</a>
+            <p class="avPopUpText">Kérlek jelentkezz be a foglaláshoz!</p>
+            <a href="http://www.pikkelymania.hu/Bejelentkezes/Belepes" class="avReserveButton">Bejelentkezés</a>
+            <a id="Cancel4" class="avCancelButton">Mégse</a>
+        </div>
+    </div>
 }
 
 <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
@@ -146,4 +285,56 @@ else
             ]
         });
     });
+</script>
+<script type="text/javascript">
+    function popUpWindow() {
+        //alert("valami");
+        document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "block";
+    }
+    document.getElementById(`Cancel3`).addEventListener("click", () => {
+        document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "none";
+        document.getElementById(`PleaseLoginPopUp`).style.display = "none";
+    });
+    document.getElementById(`Cancel4`).addEventListener("click", () => {
+        document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "none";
+        document.getElementById(`PleaseLoginPopUp`).style.display = "none";
+    });
+</script>
+@foreach (var animal in Model)
+{
+    <script type="text/javascript">
+        document.getElementById(`Reserve_@animal.AnimalId`).addEventListener("click", () => {
+            //alert("lefoglaltad");
+            var userId = @Dnn.User.UserID;
+            //alert(userId);
+            if (userId == -1) {
+                document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "flex";
+                document.getElementById(`PleaseLoginPopUp`).style.display = "flex";
+            }
+            else {
+                document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "flex";
+                document.getElementById(`PopUp_@animal.AnimalId`).style.display = "flex";
+            }
+
+        });
+        document.getElementById(`Cancel1_@animal.AnimalId`).addEventListener("click", () => {
+            document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "none";
+            //alert("vissza");
+            document.getElementById(`PopUp_@animal.AnimalId`).style.display = "none";
+        });
+        document.getElementById(`Cancel2_@animal.AnimalId`).addEventListener("click", () => {
+            document.getElementById(`popUp_@Model[0].AnimalId`).style.display = "none";
+            document.getElementById(`PopUp_@animal.AnimalId`).style.display = "none";
+        });
+        document.getElementById(`avQnt_@animal.AnimalId`).addEventListener("change", () => {
+            //alert("változott");
+            q = parseInt(document.getElementById(`avQnt_@animal.AnimalId`).value);
+
+            //alert(q);
+            document.getElementById(`avRes_@animal.AnimalId`).href = `http://www.dnndev.me/Home/moduleId/@Dnn.ModuleContext.ModuleId/AnimalBvin/@animal.AnimalId/AnimalQuantity/${q}/controller/Animal/action/Create`;
+        });
+    </script>
+}
+<script type="text/javascript">
+    
 </script>
