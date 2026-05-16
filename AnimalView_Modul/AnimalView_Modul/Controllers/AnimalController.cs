@@ -36,7 +36,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
 
         // POST: Animal/Create
         
-        public ActionResult Create(string AnimalBvin, int AnimalQuantity)
+        public ActionResult Create(string AnimalBvin, string AnimalQuantity)
         {
             try
             {
@@ -46,7 +46,9 @@ namespace AnimalView.Dnn.AnimalView_Modul.Controllers
             }
             catch
             {
-                return View();
+                string species = ModuleContext.Configuration.ModuleSettings.GetValueOrDefault("AnimalView_Modul_Setting1", "Leopárdgekkók");
+                List<Models.Animal> Animals = _animalService.GetAnimals(_animalService.GetSpeciesBvin(species));
+                return RedirectToAction("Index");// View(Animals);
             }
         }
 

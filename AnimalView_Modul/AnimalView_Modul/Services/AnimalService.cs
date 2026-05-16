@@ -183,11 +183,12 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             return "e197c105-c09e-47e0-af1a-918c43f3b74f";
         }
 
-        public void AddOrder(string AnimalBvin, int AnimalQuantity)
+        public void AddOrder(string AnimalBvin, string AnimalQuantity)
         {
             _api = new Api(StoreUrl, ApiKey);
             OrderDTO NewOrder = new OrderDTO();
             UserInfo CurrentUser = PortalSettings.Current.UserInfo;
+            int animalQuantity = int.Parse(AnimalQuantity);
 
             if(CurrentUser.UserID > 0)
             {
@@ -239,7 +240,7 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
                 _api.OrdersCreate(NewOrder);
 
                 ProductInventoryDTO AnimalInventory = _api.ProductInventoryFindForProduct(AnimalBvin).Content.FirstOrDefault();
-                AnimalInventory.QuantityReserved += AnimalQuantity;
+                AnimalInventory.QuantityReserved += animalQuantity;
                 _api.ProductInventoryUpdate(AnimalInventory);
 
 
