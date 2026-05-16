@@ -192,7 +192,9 @@ namespace AnimalView.Dnn.AnimalView_Modul.Services
             if(CurrentUser.UserID > 0)
             {
                 var orders = _api.OrdersFindAll().Content;
-                NewOrder.OrderNumber = (int.Parse((from x in orders orderby x.OrderNumber descending select x.OrderNumber).FirstOrDefault()) + 1).ToString();
+                //List<int> orderNumbers = new List<int>();
+                //foreach (var i in orders) { orderNumbers.Add(int.Parse(i.OrderNumber)); }
+                NewOrder.OrderNumber = /*(orderNumbers.Max()+1).ToString();/*/(int.Parse((from x in orders orderby int.Parse(x.OrderNumber) descending select x.OrderNumber).FirstOrDefault()) + 1).ToString();
                 NewOrder.BillingAddress = new AddressDTO
                 {
                     AddressType = AddressTypesDTO.Billing,
